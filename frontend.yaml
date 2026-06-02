@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: securebank-frontend
+  namespace: securebank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: securebank-frontend
+  template:
+    metadata:
+      labels:
+        app: securebank-frontend
+    spec:
+      containers:
+        - name: securebank-frontend
+          image: yigitsancar/securebank-frontend:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: securebank-frontend
+  namespace: securebank
+spec:
+  selector:
+    app: securebank-frontend
+  ports:
+    - port: 80
+      targetPort: 80

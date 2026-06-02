@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: securebank-backend
+  namespace: securebank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: securebank-backend
+  template:
+    metadata:
+      labels:
+        app: securebank-backend
+    spec:
+      containers:
+        - name: securebank-backend
+          image: yigitsancar/securebank:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/securebankdb
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: securebank-backend
+  namespace: securebank
+spec:
+  selector:
+    app: securebank-backend
+  ports:
+    - port: 8081
+      targetPort: 8081
